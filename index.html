@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>I'm sorry</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root{--night:#14172b;--deep:#1d2142;--lantern:#f2b35d;--rose:#e86f7d;--paper:#f3ead7;--ink:#2b2437;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-behavior:smooth;background:var(--night)}
+body{margin:0;background:linear-gradient(var(--night),var(--deep) 60%,#2a1f3d);color:var(--paper);font:400 1.15rem/1.7 "Newsreader",Georgia,serif;min-height:100vh}
+canvas#sky{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+main{position:relative;z-index:1}
+section{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4rem 1.25rem}
+:focus-visible{outline:3px solid var(--lantern);outline-offset:3px}
+
+/* hero */
+.hero{text-align:center}
+.hero h1{font:700 clamp(3.2rem,13vw,8.5rem)/1 "Caveat","Segoe Script",cursive;margin:0;color:var(--lantern);text-shadow:0 0 40px rgba(242,179,93,.45);min-height:2.1em}
+.caret{display:inline-block;width:.05em;height:.8em;background:var(--lantern);margin-left:.08em;vertical-align:-.05em;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.hero p{max-width:28ch;font-style:italic;opacity:0;transition:opacity 1.6s 0s}
+.hero p.on{opacity:.85}
+.down{margin-top:2rem;background:none;border:1px solid rgba(243,234,215,.4);color:var(--paper);border-radius:999px;padding:.7rem 1.6rem;font:inherit;cursor:pointer;opacity:0;transition:opacity 1.6s,background .25s,color .25s}
+.down.on{opacity:1}
+.down:hover{background:var(--paper);color:var(--ink)}
+
+/* letter */
+.paper{width:min(640px,100%);background:var(--paper);color:var(--ink);padding:2.5rem clamp(1.4rem,5vw,3.2rem);border-radius:4px 14px 4px 14px;transform:rotate(-1deg);box-shadow:0 30px 80px rgba(0,0,0,.5);
+background-image:repeating-linear-gradient(transparent 0 2.05rem,rgba(43,36,55,.12) 2.05rem 2.1rem)}
+.paper p{font:500 clamp(1.45rem,4.4vw,1.75rem)/2.1rem "Caveat","Segoe Script",cursive;margin:0 0 2.1rem}
+.paper .w{opacity:0;filter:blur(3px);transition:opacity .5s,filter .5s;transition-delay:calc(var(--i)*38ms)}
+.paper p.on .w{opacity:1;filter:none}
+.sign{text-align:right;color:var(--rose);font-weight:700}
+
+/* promises */
+h2{font:700 clamp(2.2rem,7vw,3.6rem)/1.1 "Caveat","Segoe Script",cursive;color:var(--lantern);margin:0 0 .4rem;text-align:center}
+.sub{opacity:.75;margin:0 0 2rem;text-align:center;font-style:italic}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.4rem;width:min(900px,100%)}
+.card{perspective:900px;background:none;border:0;padding:0;height:210px;cursor:pointer;font:inherit;color:inherit;text-align:center}
+.card .in{position:relative;display:block;width:100%;height:100%;transition:transform .8s cubic-bezier(.3,1.3,.5,1);transform-style:preserve-3d}
+.card.open .in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:1.2rem;border-radius:18px;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.front{background:linear-gradient(145deg,#2c2f5c,#3b2c55);border:1px solid rgba(242,179,93,.5);font:700 1.9rem "Caveat",cursive;color:var(--lantern);flex-direction:column;gap:.3rem}
+.front small{font:italic 1rem "Newsreader",serif;color:var(--paper);opacity:.7}
+.back{background:var(--lantern);color:var(--ink);transform:rotateY(180deg);font-size:1.05rem;line-height:1.5}
+
+/* ask */
+.ask{text-align:center}
+.btns{display:flex;gap:1rem;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:1.5rem;min-height:5rem}
+.btns button{font:700 1.5rem "Caveat",cursive;border-radius:999px;border:0;padding:.7rem 1.8rem;cursor:pointer;transition:transform .35s cubic-bezier(.3,1.5,.5,1)}
+#yes{background:var(--rose);color:#fff;box-shadow:0 0 30px rgba(232,111,125,.5);transform:scale(var(--s,1))}
+#no{background:transparent;color:var(--paper);border:1px solid rgba(243,234,215,.45);transform:scale(var(--s,1))}
+.thanks{max-width:34ch;margin-top:1.5rem;font-size:1.3rem}
+.thanks[hidden]{display:none}
+.thanks strong{font:700 clamp(2.4rem,9vw,4rem)/1.1 "Caveat",cursive;color:var(--lantern);display:block;margin-bottom:.5rem}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important;animation:none!important}.paper .w{transition-delay:0s!important}}
+</style>
+</head>
+<body>
+<canvas id="sky" aria-hidden="true"></canvas>
+<main>
+  <section class="hero">
+    <h1 id="title" aria-label="I'm sorry"><span id="typed"></span><span class="caret"></span></h1>
+    <p id="tag">Scroll down. I wrote you something.</p>
+    <button class="down" id="go">Read it</button>
+  </section>
+
+  <section id="letter">
+    <article class="paper" id="paper"></article>
+  </section>
+
+  <section id="promises">
+    <h2>Three promises</h2>
+    <p class="sub">Tap each one to open it.</p>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <section class="ask" id="ask">
+    <h2 id="q"></h2>
+    <p class="sub">Take all the time you need. I'll be right here.</p>
+    <div class="btns" id="btns">
+      <button id="yes">Yes, I forgive you</button>
+      <button id="no">Not yet</button>
+    </div>
+    <div class="thanks" id="thanks" role="status" aria-live="polite" hidden></div>
+  </section>
+</main>
+
+<script>
+/* ---- EDIT ME (or share the link with ?to=Name&from=Name) ---- */
+const P = new URLSearchParams(location.search);
+const FRIEND = P.get('to') || 'my best friend';
+const ME = P.get('from') || 'Your friend 911';
+const LETTER = [
+  "I've started this message about ten times. Every version sounded like an excuse, so I built this instead.",
+  "I was wrong. Not a little wrong. I let you down when it mattered.",
+  "You're the one who shows up on the bad days, remembers the small things, and laughs at my worst jokes. Hurting you is the last thing I ever want to do.",
+  "I'm not asking you to pretend it didn't happen. I'm asking for a chance to show you I've learned."
+];
+const PROMISES = [
+  ["I'll listen first","Next time something feels off, I'll ask what you're feeling and listen to the whole answer before I say a word."],
+  ["I'll own my mistakes","No excuses and no deflecting. If I get it wrong, you'll hear \"I was wrong\" from me quickly."],
+  ["I'll show up","On the good days and the awful ones. Call me at 3 a.m. and I'll pick up."]
+];
+const NO_TEXTS = ["Not yet","Are you sure?","Please?","I'll bring snacks","I'm really, really sorry","Okay, okay\u2026"];
+/* ------------------------------------------------------------- */
+
+const $ = s => document.querySelector(s);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+document.title = "I'm sorry, " + FRIEND;
+$('#q').textContent = "Will you forgive me, " + FRIEND + "?";
+
+/* hero typing */
+(function(){
+  const text = "I'm sorry, " + FRIEND + ".", el = $('#typed');
+  let i = 0;
+  function done(){ $('#tag').classList.add('on'); setTimeout(()=>$('#go').classList.add('on'),700); }
+  if(reduce){ el.textContent = text; return done(); }
+  (function step(){
+    el.textContent = text.slice(0, ++i);
+    if(i < text.length) setTimeout(step, 95 + Math.random()*70); else setTimeout(done, 500);
+  })();
+})();
+$('#go').onclick = () => $('#letter').scrollIntoView({behavior: reduce ? 'auto' : 'smooth'});
+
+/* letter: words appear like ink */
+(function(){
+  const paper = $('#paper'); let n = 0;
+  LETTER.concat([null]).forEach(t => {
+    const p = document.createElement('p');
+    if(t === null){ p.className = 'sign'; p.textContent = 'With all my heart, ' + ME; p.style.margin = 0; }
+    else p.innerHTML = '';
+    if(t){
+      t.split(' ').forEach((w,i) => {
+        const s = document.createElement('span'); s.className = 'w'; s.style.setProperty('--i', i);
+        s.textContent = w + ' '; p.appendChild(s);
+      });
+    }
+    paper.appendChild(p);
+  });
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if(e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); }
+  }), {threshold:.6});
+  paper.querySelectorAll('p').forEach(p => { if(p.classList.contains('sign')){ p.style.opacity=0; p.style.transition='opacity 1s'; new IntersectionObserver((e,o)=>{ if(e[0].isIntersecting){ p.style.opacity=1; o.disconnect(); } },{threshold:.9}).observe(p);} else io.observe(p); });
+})();
+
+/* promise cards */
+PROMISES.forEach(([t, b]) => {
+  const c = document.createElement('button');
+  c.className = 'card'; c.setAttribute('aria-expanded','false');
+  c.innerHTML = '<span class="in"><span class="face front"></span><span class="face back"></span></span>';
+  c.querySelector('.front').innerHTML = '<span></span><small>tap to open</small>';
+  c.querySelector('.front span').textContent = t;
+  c.querySelector('.back').textContent = b;
+  c.onclick = () => { const o = c.classList.toggle('open'); c.setAttribute('aria-expanded', o); };
+  $('#cards').appendChild(c);
+});
+
+/* sky: lanterns + heart burst */
+const cv = $('#sky'), ctx = cv.getContext('2d');
+let W, H, dpr = Math.min(devicePixelRatio||1, 2), t0 = 0, boost = 0;
+function size(){ W = innerWidth; H = innerHeight; cv.width = W*dpr; cv.height = H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); }
+addEventListener('resize', size); size();
+const mk = (init) => ({x:Math.random()*W, y: init ? Math.random()*H : H+40, r:6+Math.random()*14, v:.15+Math.random()*.35, ph:Math.random()*6.28, a:.25+Math.random()*.5});
+const lanterns = Array.from({length: reduce ? 14 : 34}, () => mk(true));
+let bits = [];
+function burst(){
+  const cols = ['#e86f7d','#f2b35d','#f3ead7','#ff9fb0'];
+  for(let i=0;i<110;i++) bits.push({x:W/2,y:H*.6,vx:(Math.random()-.5)*14,vy:-6-Math.random()*12,rot:Math.random()*6,vr:(Math.random()-.5)*.2,c:cols[i%4],s:14+Math.random()*22,life:1});
+  boost = 140;
+}
+function frame(t){
+  ctx.clearRect(0,0,W,H);
+  lanterns.forEach(l => {
+    l.y -= l.v * (1 + boost*.03); l.x += Math.sin(t/1800 + l.ph)*.35;
+    if(l.y < -60){ Object.assign(l, mk(false)); }
+    const g = ctx.createRadialGradient(l.x,l.y,0,l.x,l.y,l.r*4);
+    g.addColorStop(0,'rgba(255,214,140,'+l.a+')'); g.addColorStop(.3,'rgba(242,179,93,'+l.a*.45+')'); g.addColorStop(1,'rgba(242,179,93,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(l.x,l.y,l.r*4,0,6.283); ctx.fill();
+  });
+  if(boost>0) boost--;
+  bits = bits.filter(b => b.life > 0);
+  bits.forEach(b => {
+    b.vy += .28; b.x += b.vx; b.y += b.vy; b.vx *= .985; b.rot += b.vr; b.life -= .006;
+    ctx.save(); ctx.globalAlpha = Math.max(b.life,0); ctx.translate(b.x,b.y); ctx.rotate(b.rot);
+    ctx.fillStyle = b.c; ctx.font = b.s+'px serif'; ctx.textAlign='center'; ctx.fillText('\u2665',0,0); ctx.restore();
+  });
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+/* the question */
+let nopes = 0;
+const yes = $('#yes'), no = $('#no');
+no.onclick = () => {
+  nopes++;
+  if(nopes >= NO_TEXTS.length){ no.style.display = 'none'; yes.textContent = 'Yes, obviously'; yes.style.setProperty('--s', 1.3); return; }
+  no.textContent = NO_TEXTS[nopes];
+  no.style.setProperty('--s', Math.max(1 - nopes*.13, .4));
+  yes.style.setProperty('--s', 1 + nopes*.1);
+};
+yes.onclick = () => {
+  $('#btns').style.display = 'none';
+  const th = $('#thanks');
+  th.hidden = false;
+  th.innerHTML = '<strong></strong><span></span>';
+  th.querySelector('strong').textContent = 'Thank you, ' + FRIEND + '.';
+  th.querySelector('span').textContent = "I'm so grateful for you. Dinner is on me, and I'm bringing the snacks.";
+  burst(); if(!reduce){ setTimeout(burst, 700); setTimeout(burst, 1500); }
+  th.scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block:'center'});
+};
+</script>
+</body>
+</html>
